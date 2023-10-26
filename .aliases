@@ -1,0 +1,16 @@
+#alias cat='bat'
+alias cat='batcat --paging=never -pp'
+alias less='batcat --paging=always -pp'
+
+alias grep="rg"
+
+alias ls="lsd"
+alias ll="lsd -l"
+alias la="lsd -a"
+alias lla="lsd -la"
+alias l="lsd -l"
+
+alias bathelp='batcat --plain --language=help'
+help() {
+    "$@" --help 2>&1 | bathelp
+}
