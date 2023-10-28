@@ -1,5 +1,9 @@
 - hosts: localhost
   become: true
   tasks:
-  - name: install Zsh
-    apt: name=zsh
+  - name: Install packages
+    apt: name={{item}}
+    with_items:
+      - zsh
+      - fonts-powerline
+      - rofi
