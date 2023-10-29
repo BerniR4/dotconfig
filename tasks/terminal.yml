@@ -1,10 +1,38 @@
 - name: Install terminal/shell packages
-  apt: name={{item}}
+  apt: name={{ item }}
   with_items:
     - zsh
     - fonts-powerline
+    - lsd
+    - ripgrep
+    - bat
+
+- name: Fetch oh-my-zsh
+  ansible.builtin.uri:
+    url: https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+    return_content: yes
+  register: ohmyzsh_installer
+
+- name: Install oh-my-zsh
+  ansible.builtin.command:
+    cmd: sh -s
+    stdin: "{{ ohmyzsh_installer.content }}"
+    creates: /home/orenga/.oh-my-zsh
+  become_user: orenga
+
+- name: Install PowerLevel10k
+  ansible.builtin.git:
+    repo: https://github.com/romkatv/powerlevel10k.git 
+    dest: /home/orenga/.oh-my-zsh/custom/themes/powerlevel10k
+    depth: 1
+    force: yes
+
+      #- name: Install font
+      #  ansible.builtin.get_url:
+      #    url: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/CodeNewRoman.tar.xz
 
 - name: Copy configuration files
   copy: 
     src: files/
     dest: /home/orenga/
+
