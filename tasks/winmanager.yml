@@ -1,0 +1,5 @@
+- name: Install and configure Window Manager + background
+  apt: name={{item}}
+  with_items:
+    - rofi
+    - feh

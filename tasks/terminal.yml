@@ -1,0 +1,8 @@
+- name: Install terminal/shell packages
+  apt: name={{item}}
+  with_items:
+    - zsh
+    - fonts-powerline
+
+      #- name: Copy configuration files
+      #  copy: src=files/.

@@ -1,9 +1,10 @@
 - hosts: localhost
   become: true
+  pre_tasks:
+    - name: update repositories
+      apt: update_cache=yes
+      changed_when: False
+
   tasks:
-  - name: Install packages
-    apt: name={{item}}
-    with_items:
-      - zsh
-      - fonts-powerline
-      - rofi
+    - include: tasks/winmanager.yml
+    - include: tasks/terminal.yml
