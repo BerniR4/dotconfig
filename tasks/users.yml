@@ -1,0 +1,6 @@
+- name: Create personal user
+  ansible.builtin.user:
+    name: orenga
+    create_home: True
+    shell: /bin/zsh
+    state: present

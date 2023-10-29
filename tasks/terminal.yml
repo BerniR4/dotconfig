@@ -4,5 +4,7 @@
     - zsh
     - fonts-powerline
 
-      #- name: Copy configuration files
-      #  copy: src=files/.
+- name: Copy configuration files
+  copy: 
+    src: files/
+    dest: /home/orenga/
