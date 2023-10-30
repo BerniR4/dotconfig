@@ -1,6 +1,6 @@
 - name: Install terminal/shell packages
   apt: name={{ item }}
-  with_items:
+  loop:
     - zsh
     - fonts-powerline
     - lsd
@@ -27,9 +27,28 @@
     depth: 1
     force: yes
 
-      #- name: Install font
-      #  ansible.builtin.get_url:
-      #    url: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/CodeNewRoman.tar.xz
+- name: Install zsh plugins
+  ansible.builtin.git:
+    repo: https://github.com/zsh-users/{{ item }}.git 
+    dest: /home/orenga/.oh-my-zsh/custom/plugins/{{ item }}
+    depth: 1
+    force: yes
+  loop:
+    - zsh-autosuggestions
+    - zsh-syntax-highlighting
+
+- name: Ensures font directory exists
+  ansible.builtin.file:
+    path: "/home/orenga/.local/share/fonts"
+    state: directory
+
+- name: Install font
+  ansible.builtin.get_url:
+    url: "https://github.com/ryanoasis/nerd-fonts/raw/HEAD/patched-fonts/CodeNewRoman/{{ item }}"
+    dest: /home/orenga/.local/share/fonts
+  loop:
+    - Bold/CodeNewRomanNerdFontMono-Bold.otf
+    - Regular/CodeNewRomanNerdFontMono-Regular.otf
 
 - name: Copy configuration files
   copy: 
