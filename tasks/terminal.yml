@@ -26,6 +26,7 @@
     dest: /home/orenga/.oh-my-zsh/custom/themes/powerlevel10k
     depth: 1
     force: yes
+  become_user: orenga
 
 - name: Install zsh plugins
   ansible.builtin.git:
@@ -33,6 +34,7 @@
     dest: /home/orenga/.oh-my-zsh/custom/plugins/{{ item }}
     depth: 1
     force: yes
+  become_user: orenga
   loop:
     - zsh-autosuggestions
     - zsh-syntax-highlighting
@@ -41,17 +43,55 @@
   ansible.builtin.file:
     path: "/home/orenga/.local/share/fonts"
     state: directory
+    owner: orenga
+    group: orenga
 
 - name: Install font
   ansible.builtin.get_url:
     url: "https://github.com/ryanoasis/nerd-fonts/raw/HEAD/patched-fonts/CodeNewRoman/{{ item }}"
     dest: /home/orenga/.local/share/fonts
+    owner: orenga
+    group: orenga
   loop:
     - Bold/CodeNewRomanNerdFontMono-Bold.otf
     - Regular/CodeNewRomanNerdFontMono-Regular.otf
 
 - name: Copy configuration files
-  copy: 
+  ansible.builtin.copy: 
     src: files/
     dest: /home/orenga/
+    owner: orenga
+    group: orenga
+
+- name: Fetch kitty
+  ansible.builtin.uri:
+    url: https://sw.kovidgoyal.net/kitty/installer.sh
+    return_content: yes
+  register: kitty_installer
+
+- name: Install kitty
+  ansible.builtin.command:
+    cmd: sh -s
+    stdin: "{{ kitty_installer.content }}"
+    creates: /home/orenga/.local/kitty.app
+  become_user: orenga
+
+- name: Ensures local/bin directory exists
+  ansible.builtin.file:
+    path: "/home/orenga/.local/bin"
+    state: directory
+    owner: orenga
+    group: orenga
+
+- name: Add kitty to PATH (symlink)
+  ansible.builtin.file:
+    src: /home/orenga/.local/kitty.app/bin/{{ item }}
+    dest: /home/orenga/.local/bin/{{ item }}
+    state: link
+    owner: orenga
+    group: orenga
+    follow: false
+  loop:
+    - kitty
+    - kitten
 
