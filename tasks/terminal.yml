@@ -1,11 +1,14 @@
 - name: Install terminal/shell packages
-  apt: name={{ item }}
+  ansible.builtin.apt: 
+    name: "{{ item }}"
   loop:
     - zsh
     - fonts-powerline
     - lsd
     - ripgrep
     - bat
+    - thunar
+    - polybar
 
 - name: Fetch oh-my-zsh
   ansible.builtin.uri:
@@ -63,6 +66,11 @@
     owner: orenga
     group: orenga
 
+- name: Set exec permissions to polybar script
+  ansible.builtin.file:
+    path: /home/orenga/.config/polybar/launch.sh
+    mode: +x
+
 - name: Fetch kitty
   ansible.builtin.uri:
     url: https://sw.kovidgoyal.net/kitty/installer.sh
@@ -76,21 +84,11 @@
     creates: /home/orenga/.local/kitty.app
   become_user: orenga
 
-- name: Ensures local/bin directory exists
-  ansible.builtin.file:
-    path: "/home/orenga/.local/bin"
-    state: directory
-    owner: orenga
-    group: orenga
-
 - name: Add kitty to PATH (symlink)
   ansible.builtin.file:
     src: /home/orenga/.local/kitty.app/bin/{{ item }}
-    dest: /home/orenga/.local/bin/{{ item }}
+    dest: /bin/{{ item }}
     state: link
-    owner: orenga
-    group: orenga
-    follow: false
   loop:
     - kitty
     - kitten

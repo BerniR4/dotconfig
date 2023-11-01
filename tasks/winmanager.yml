@@ -1,5 +1,24 @@
 - name: Install and configure Window Manager + background
-  apt: name={{item}}
-  with_items:
+  ansible.builtin.apt: 
+    name: "{{ item }}"
+  loop:
     - rofi
     - feh
+    - i3
+
+- name: Download wallpaper
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/linuxdotexe/nordic-wallpapers/HEAD/wallpapers/ign-0011.png
+    dest: /home/orenga/Pictures/default.png
+    owner: orenga
+    group: orenga
+
+- name: Create wallpaper symlink
+  ansible.builtin.file:
+    src: /home/orenga/Pictures/default.png
+    dest: /home/orenga/Pictures/wallpaper.png
+    state: link
+    owner: orenga
+    group: orenga
+    follow: false
+
