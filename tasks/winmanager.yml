@@ -22,3 +22,7 @@
     group: orenga
     follow: false
 
+- name: Set rofi theme
+  ansible.builtin.copy:
+    dest: /home/orenga/.config/rofi/config.rasi
+    content: '@theme "/home/orenga/.local/share/rofi/themes/nord.rasi"'

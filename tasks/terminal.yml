@@ -84,12 +84,29 @@
     creates: /home/orenga/.local/kitty.app
   become_user: orenga
 
+- name: Ensures required directories exist
+  ansible.builtin.file:
+    path: "/home/orenga/.local/{{ item }}"
+    state: directory
+    owner: orenga
+    group: orenga
+  loop:
+    - bin
+    - share/applications
+
 - name: Add kitty to PATH (symlink)
   ansible.builtin.file:
     src: /home/orenga/.local/kitty.app/bin/{{ item }}
-    dest: /bin/{{ item }}
+    dest: /home/orenga/.local/bin/{{ item }}
     state: link
   loop:
     - kitty
     - kitten
 
+- name: Place kitty desktop
+  ansible.builtin.copy:
+    src: /home/orenga/.local/kitty.app/share/applications/kitty.desktop
+    dest: /home/orenga/.local/share/applications/kitty.desktop
+    remote_src: true
+    owner: orenga
+    group: orenga
