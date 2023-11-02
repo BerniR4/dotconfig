@@ -7,5 +7,5 @@
 
   tasks:
     - include: tasks/users.yml
-    - include: tasks/winmanager.yml
     - include: tasks/terminal.yml
+    - include: tasks/winmanager.yml
