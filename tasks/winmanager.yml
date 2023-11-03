@@ -6,6 +6,16 @@
     - feh
     - i3
 
+- name: Ensure that pic and rofi folders exist
+  ansible.builtin.file:
+    path: "/home/orenga/{{ item }}"
+    state: directory
+    owner: orenga
+    group: orenga
+  loop:
+    - Pictures
+    - .local/share/rofi/themes
+
 - name: Download wallpaper
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/linuxdotexe/nordic-wallpapers/HEAD/wallpapers/ign-0011.png

@@ -4,3 +4,8 @@
     create_home: True
     shell: /bin/zsh
     state: present
+
+- name: Add user to sudoers
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/orenga
+    content: 'orenga ALL=(ALL) NOPASSWD: ALL'
