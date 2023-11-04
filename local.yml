@@ -6,6 +6,6 @@
       changed_when: False
 
   tasks:
-    - include: tasks/users.yml
-    - include: tasks/terminal.yml
-    - include: tasks/winmanager.yml
+    - import_tasks: tasks/users.yml
+    - import_tasks: tasks/terminal.yml
+    - import_tasks: tasks/winmanager.yml

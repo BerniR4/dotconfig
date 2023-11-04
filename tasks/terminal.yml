@@ -7,6 +7,10 @@
       - bat
       - thunar
       - polybar
+      - ca-certificates
+      - curl
+      - gnupg
+      - pipx
       #- lsd
 
 - name: Fetch lsd releases
@@ -119,3 +123,15 @@
     remote_src: true
     owner: orenga
     group: orenga
+
+# Maybe I should add a condition to skip the nodejs installation if it is already present
+- name: Fetch nodejs
+  ansible.builtin.uri:
+    url: https://install-node.vercel.app/lts
+    return_content: yes
+  register: nodejs_installer
+
+- name: Install nodejs
+  ansible.builtin.command:
+    cmd: "bash -s -- --yes"
+    stdin: "{{ nodejs_installer.content }}"
