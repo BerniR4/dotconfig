@@ -1,14 +1,23 @@
 - name: Install terminal/shell packages
   ansible.builtin.apt: 
-    name: "{{ item }}"
-  loop:
-    - zsh
-    - fonts-powerline
-    - lsd
-    - ripgrep
-    - bat
-    - thunar
-    - polybar
+    name: 
+      - zsh
+      - fonts-powerline
+      - ripgrep
+      - bat
+      - thunar
+      - polybar
+      #- lsd
+
+- name: Fetch lsd releases
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/lsd-rs/lsd/releases/latest
+    return_content: true
+  register: lsd_releases
+
+- name: Install last lsd version
+  ansible.builtin.apt:
+    deb: "{{ lsd_releases.json | json_query('assets[?starts_with(name, `lsd_`)].browser_download_url') | json_query('[?ends_with(@, `amd64.deb`)]') | first }}"
 
 - name: Fetch oh-my-zsh
   ansible.builtin.uri:
