@@ -15,6 +15,7 @@
   loop:
     - Pictures
     - .local/share/rofi/themes
+    - .config/rofi
 
 - name: Download wallpaper
   ansible.builtin.get_url:
