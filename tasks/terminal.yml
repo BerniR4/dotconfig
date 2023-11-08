@@ -33,41 +33,41 @@
   ansible.builtin.command:
     cmd: sh -s
     stdin: "{{ ohmyzsh_installer.content }}"
-    creates: /home/orenga/.oh-my-zsh
-  become_user: orenga
+    creates: "/home/{{ username }}/.oh-my-zsh"
+  become_user: "{{ username }}"
 
 - name: Install PowerLevel10k
   ansible.builtin.git:
     repo: https://github.com/romkatv/powerlevel10k.git 
-    dest: /home/orenga/.oh-my-zsh/custom/themes/powerlevel10k
+    dest: "/home/{{ username }}/.oh-my-zsh/custom/themes/powerlevel10k"
     depth: 1
     force: yes
-  become_user: orenga
+  become_user: "{{ username }}"
 
 - name: Install zsh plugins
   ansible.builtin.git:
     repo: https://github.com/zsh-users/{{ item }}.git 
-    dest: /home/orenga/.oh-my-zsh/custom/plugins/{{ item }}
+    dest: "/home/{{ username }}/.oh-my-zsh/custom/plugins/{{ item }}"
     depth: 1
     force: yes
-  become_user: orenga
+  become_user: "{{ username }}"
   loop:
     - zsh-autosuggestions
     - zsh-syntax-highlighting
 
 - name: Ensures font directory exists
   ansible.builtin.file:
-    path: "/home/orenga/.local/share/fonts"
+    path: "/home/{{ username }}/.local/share/fonts"
     state: directory
-    owner: orenga
-    group: orenga
+    owner: "{{ username }}"
+    group: "{{ username }}"
 
 - name: Install font
   ansible.builtin.get_url:
     url: "https://github.com/ryanoasis/nerd-fonts/raw/HEAD/patched-fonts/CodeNewRoman/{{ item }}"
-    dest: /home/orenga/.local/share/fonts
-    owner: orenga
-    group: orenga
+    dest: "/home/{{ username }}/.local/share/fonts"
+    owner: "{{ username }}"
+    group: "{{ username }}"
   loop:
     - Bold/CodeNewRomanNerdFontMono-Bold.otf
     - Regular/CodeNewRomanNerdFontMono-Regular.otf
@@ -75,13 +75,13 @@
 - name: Copy configuration files
   ansible.builtin.copy: 
     src: files/
-    dest: /home/orenga/
-    owner: orenga
-    group: orenga
+    dest: "/home/{{ username }}/"
+    owner: "{{ username }}"
+    group: "{{ username }}"
 
 - name: Set exec permissions to polybar script
   ansible.builtin.file:
-    path: /home/orenga/.config/polybar/launch.sh
+    path: "/home/{{ username }}/.config/polybar/launch.sh"
     mode: +x
 
 - name: Fetch kitty
@@ -94,23 +94,23 @@
   ansible.builtin.command:
     cmd: sh -s
     stdin: "{{ kitty_installer.content }}"
-    creates: /home/orenga/.local/kitty.app
-  become_user: orenga
+    creates: "/home/{{ username }}/.local/kitty.app"
+  become_user: "{{ username }}"
 
 - name: Ensures required directories exist
   ansible.builtin.file:
-    path: "/home/orenga/.local/{{ item }}"
+    path: "/home/{{ username }}/.local/{{ item }}"
     state: directory
-    owner: orenga
-    group: orenga
+    owner: "{{ username }}"
+    group: "{{ username }}"
   loop:
     - bin
     - share/applications
 
 - name: Add kitty to PATH (symlink)
   ansible.builtin.file:
-    src: /home/orenga/.local/kitty.app/bin/{{ item }}
-    dest: /home/orenga/.local/bin/{{ item }}
+    src: "/home/{{ username }}/.local/kitty.app/bin/{{ item }}"
+    dest: "/home/{{ username }}/.local/bin/{{ item }}"
     state: link
   loop:
     - kitty
@@ -118,11 +118,11 @@
 
 - name: Place kitty desktop
   ansible.builtin.copy:
-    src: /home/orenga/.local/kitty.app/share/applications/kitty.desktop
-    dest: /home/orenga/.local/share/applications/kitty.desktop
+    src: "/home/{{ username }}/.local/kitty.app/share/applications/kitty.desktop"
+    dest: "/home/{{ username }}/.local/share/applications/kitty.desktop"
     remote_src: true
-    owner: orenga
-    group: orenga
+    owner: "{{ username }}"
+    group: "{{ username }}"
 
 # Maybe I should add a condition to skip the nodejs installation if it is already present
 - name: Fetch nodejs

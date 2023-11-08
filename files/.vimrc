@@ -10,6 +10,18 @@ set lcs=tab:▸\ ,trail:·,eol:¬,nbsp:_
 set list
 " Highlight searches
 set hlsearch
+" Show numbers
+set nu
+" Set tab space to 4
+set ts=4 sw=4
+" More powerful backspacing
+set backspace=ident,eol,start
+set history=50
+set ruler
+
+" These are files we are not likely to want to edit or read.
+set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc
+
 syntax enable
 filetype plugin indent on
 

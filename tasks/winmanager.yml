@@ -8,10 +8,10 @@
 
 - name: Ensure that pic and rofi folders exist
   ansible.builtin.file:
-    path: "/home/orenga/{{ item }}"
+    path: "/home/{{ username }}/{{ item }}"
     state: directory
-    owner: orenga
-    group: orenga
+    owner: "{{ username }}"
+    group: "{{ username }}"
   loop:
     - Pictures
     - .local/share/rofi/themes
@@ -20,20 +20,20 @@
 - name: Download wallpaper
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/linuxdotexe/nordic-wallpapers/HEAD/wallpapers/ign-0011.png
-    dest: /home/orenga/Pictures/default.png
-    owner: orenga
-    group: orenga
+    dest: "/home/{{ username }}/Pictures/default.png"
+    owner: "{{ username }}"
+    group: "{{ username }}"
 
 - name: Create wallpaper symlink
   ansible.builtin.file:
-    src: /home/orenga/Pictures/default.png
-    dest: /home/orenga/Pictures/wallpaper.png
+    src: "/home/{{ username }}/Pictures/default.png"
+    dest: "/home/{{ username }}/Pictures/wallpaper.png"
     state: link
-    owner: orenga
-    group: orenga
+    owner: "{{ username }}"
+    group: "{{ username }}"
     follow: false
 
 - name: Set rofi theme
   ansible.builtin.copy:
-    dest: /home/orenga/.config/rofi/config.rasi
-    content: '@theme "/home/orenga/.local/share/rofi/themes/nord.rasi"'
+    dest: "/home/{{ username }}/.config/rofi/config.rasi"
+    content: '@theme "/home/{{ username }}/.local/share/rofi/themes/nord.rasi"'
