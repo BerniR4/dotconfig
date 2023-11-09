@@ -1,0 +1,100 @@
+- name: Install and configure Window Manager + background
+  ansible.builtin.apt: 
+    name: "{{ item }}"
+  loop:
+    - rofi
+    - feh
+    - i3
+    - thunar
+    - polybar
+
+- name: Copy configuration files
+  ansible.builtin.copy: 
+    src: files/
+    dest: "/home/{{ username }}/"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
+- name: Set exec permissions to polybar script
+  ansible.builtin.file:
+    path: "/home/{{ username }}/.config/polybar/launch.sh"
+    mode: +x
+
+- name: Ensure that "dest" folders exist
+  ansible.builtin.file:
+    path: "/home/{{ username }}/{{ item }}"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+  loop:
+    - Pictures
+    - .local/share/rofi/themes
+    - .config/rofi
+    - .local/share/fonts
+    - .local/bin
+    - .local/share/applications
+
+- name: Install and configure kitty
+  block:
+    - name: Fetch kitty
+      ansible.builtin.uri:
+        url: https://sw.kovidgoyal.net/kitty/installer.sh
+        return_content: yes
+      register: kitty_installer
+
+    - name: Install kitty
+      ansible.builtin.command:
+        cmd: sh -s
+        stdin: "{{ kitty_installer.content }}"
+        creates: "/home/{{ username }}/.local/kitty.app"
+      become_user: "{{ username }}"
+
+    - name: Add kitty to PATH (symlink)
+      ansible.builtin.file:
+        src: "/home/{{ username }}/.local/kitty.app/bin/{{ item }}"
+        dest: "/home/{{ username }}/.local/bin/{{ item }}"
+        state: link
+      loop:
+        - kitty
+        - kitten
+
+    - name: Place kitty desktop
+      ansible.builtin.copy:
+        src: "/home/{{ username }}/.local/kitty.app/share/applications/kitty.desktop"
+        dest: "/home/{{ username }}/.local/share/applications/kitty.desktop"
+        remote_src: true
+        owner: "{{ username }}"
+        group: "{{ username }}"
+
+- name: Install font
+  ansible.builtin.get_url:
+    url: "https://github.com/ryanoasis/nerd-fonts/raw/HEAD/patched-fonts/CodeNewRoman/{{ item }}"
+    dest: "/home/{{ username }}/.local/share/fonts"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+  loop:
+    - Bold/CodeNewRomanNerdFontMono-Bold.otf
+    - Regular/CodeNewRomanNerdFontMono-Regular.otf
+
+- name: Configure background
+  blocK:
+    - name: Download wallpaper
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/linuxdotexe/nordic-wallpapers/HEAD/wallpapers/ign-0011.png
+        dest: "/home/{{ username }}/Pictures/default.png"
+        owner: "{{ username }}"
+        group: "{{ username }}"
+
+    - name: Create wallpaper symlink
+      ansible.builtin.file:
+        src: "/home/{{ username }}/Pictures/default.png"
+        dest: "/home/{{ username }}/Pictures/wallpaper.png"
+        state: link
+        owner: "{{ username }}"
+        group: "{{ username }}" 
+        follow: false
+
+- name: Set rofi theme
+  ansible.builtin.copy:
+    dest: "/home/{{ username }}/.config/rofi/config.rasi"
+    content: '@theme "/home/{{ username }}/.local/share/rofi/themes/nord.rasi"'

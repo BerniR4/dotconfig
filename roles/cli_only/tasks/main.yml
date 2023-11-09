@@ -1,0 +1,92 @@
+- name: Create personal user
+  ansible.builtin.user:
+    name: "{{ username }}"
+    create_home: True
+    shell: /bin/zsh
+    state: present
+
+- name: Add user to sudoers
+  ansible.builtin.copy:
+    dest: "/etc/sudoers.d/{{ username }}"
+    content: "{{ username }} ALL=(ALL) NOPASSWD: ALL"
+
+- name: Install terminal/shell packages
+  ansible.builtin.apt: 
+    name: 
+      - zsh
+      - fonts-powerline
+      - ripgrep
+      - bat
+      - ca-certificates
+      - curl
+      - gnupg
+
+- name: Install terminal/shell packages
+  ansible.builtin.apt: 
+    name: lsd
+  when: (ansible_facts['distribution_major_version'] | int >= 12 and ansible_facts['distribution'] == "Debian") or
+        (ansible_facts['distribution_major_version'] | int >= 23 and ansible_facts['distribution'] == "Ubuntu")
+  register: lsd_installed
+
+# - name: Fetch lsd releases
+#   ansible.builtin.uri:
+#     url: https://api.github.com/repos/lsd-rs/lsd/releases/latest
+#     return_content: true
+#   register: lsd_releases
+#   when: lsd_installed.skipped is defined
+
+# - name: Install last lsd version
+#   ansible.builtin.apt:
+#     deb: "{{ lsd_releases.json | json_query('assets[?starts_with(name, `lsd_`)].browser_download_url') | json_query('[?ends_with(@, `amd64.deb`)]') | first }}"
+#   when: lsd_installed.skipped is defined
+
+- name: Fetch oh-my-zsh
+  ansible.builtin.uri:
+    url: https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+    return_content: yes
+  register: ohmyzsh_installer
+
+- name: Install oh-my-zsh
+  ansible.builtin.command:
+    cmd: sh -s
+    stdin: "{{ ohmyzsh_installer.content }}"
+    creates: "/home/{{ username }}/.oh-my-zsh"
+  become_user: "{{ username }}"
+
+- name: Install PowerLevel10k
+  ansible.builtin.git:
+    repo: https://github.com/romkatv/powerlevel10k.git 
+    dest: "/home/{{ username }}/.oh-my-zsh/custom/themes/powerlevel10k"
+    depth: 1
+    force: yes
+  become_user: "{{ username }}"
+
+- name: Install zsh plugins
+  ansible.builtin.git:
+    repo: https://github.com/zsh-users/{{ item }}.git 
+    dest: "/home/{{ username }}/.oh-my-zsh/custom/plugins/{{ item }}"
+    depth: 1
+    force: yes
+  become_user: "{{ username }}"
+  loop:
+    - zsh-autosuggestions
+    - zsh-syntax-highlighting
+
+- name: Copy configuration files
+  ansible.builtin.copy: 
+    src: files/
+    dest: "/home/{{ username }}/"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
+# Maybe I should add a condition to skip the nodejs installation if it is already present
+- name: Fetch nodejs
+  ansible.builtin.uri:
+    url: https://install-node.vercel.app/lts
+    return_content: yes
+  register: nodejs_installer
+
+- name: Install nodejs
+  ansible.builtin.command:
+    cmd: "bash -s -- --yes"
+    stdin: "{{ nodejs_installer.content }}"
