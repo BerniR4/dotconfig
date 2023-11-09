@@ -77,7 +77,7 @@
     - Regular/CodeNewRomanNerdFontMono-Regular.otf
 
 - name: Configure background
-  blocK:
+  block:
     - name: Download wallpaper
       ansible.builtin.get_url:
         url: https://raw.githubusercontent.com/linuxdotexe/nordic-wallpapers/HEAD/wallpapers/ign-0011.png
