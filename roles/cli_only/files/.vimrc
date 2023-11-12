@@ -15,7 +15,7 @@ set nu
 " Set tab space to 4
 set ts=4 sw=4
 " More powerful backspacing
-set backspace=ident,eol,start
+" set backspace=ident,eol,start
 set history=50
 set ruler
 
