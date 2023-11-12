@@ -5,5 +5,5 @@
       apt: update_cache=yes
       changed_when: False
   roles:
-    - cli_only
+    - { role: cli_only, tags: cli }
     - desktop
