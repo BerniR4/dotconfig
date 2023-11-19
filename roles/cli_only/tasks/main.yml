@@ -23,6 +23,7 @@
       - wget
       - gpg
       - ranger
+      - htop
 
 - name: Install lsd if the package exists
   ansible.builtin.apt: 
